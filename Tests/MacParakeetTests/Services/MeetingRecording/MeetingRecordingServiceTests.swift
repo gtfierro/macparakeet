@@ -2291,6 +2291,39 @@ final class MeetingRecordingServiceTests: XCTestCase {
         XCTAssertEqual(output.speechEngine, SpeechEngineSelection(engine: .cohere, language: "ja"))
     }
 
+    func testUserDisabledLiveTranscriptionDoesNotRouteLivePreviewChunksButFinalRouteStillCaptured() async throws {
+        let captureService = MockMeetingAudioCaptureService()
+        let audioConverter = MockMeetingAudioFileConverter()
+        let liveSelection = SpeechEngineSelection(engine: .parakeet)
+        let sttClient = LeasingMeetingSTTClient(selection: liveSelection)
+        let service = MeetingRecordingService(
+            audioCaptureService: captureService,
+            audioConverter: audioConverter,
+            sttTranscriber: sttClient,
+            isLiveTranscriptionEnabled: { false }
+        )
+
+        try await service.startRecording()
+
+        let activePlan = await service.activeMeetingSpeechPlan
+        XCTAssertEqual(activePlan, MeetingSpeechPlan(preview: nil, final: liveSelection))
+
+        let microphoneBuffer = try XCTUnwrap(makeMonoFloatBuffer(frameCount: 80_000, sampleValue: 0.25))
+        await captureService.yield(
+            .microphoneBuffer(
+                microphoneBuffer,
+                AVAudioTime(hostTime: AVAudioTime.hostTime(forSeconds: 100.0))
+            ))
+        try await Task.sleep(for: .milliseconds(100))
+
+        let routedSelections = await sttClient.routedSelections
+        XCTAssertEqual(routedSelections, [])
+
+        let output = try await service.stopRecording()
+        defer { try? FileManager.default.removeItem(at: output.folderURL) }
+        XCTAssertEqual(output.speechEngine, liveSelection)
+    }
+
     func testMeetingLivePreviewDryRunUsesInjectedCapabilitiesForNextVariant() async throws {
         let captureService = MockMeetingAudioCaptureService()
         let audioConverter = MockMeetingAudioFileConverter()

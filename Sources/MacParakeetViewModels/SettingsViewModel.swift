@@ -562,6 +562,18 @@ public final class SettingsViewModel {
             ))
         }
     }
+    public var meetingLiveTranscriptionEnabled: Bool {
+        didSet {
+            defaults.set(
+                meetingLiveTranscriptionEnabled,
+                forKey: UserDefaultsAppRuntimePreferences.meetingLiveTranscriptionEnabledKey
+            )
+            Telemetry.send(.settingChanged(
+                setting: .meetingLiveTranscriptionEnabled,
+                value: Self.settingValue(meetingLiveTranscriptionEnabled)
+            ))
+        }
+    }
     public private(set) var pendingMeetingRecoveryCount = 0
     public var onRecoverPendingMeetingRecordings: (() -> Void)?
 
@@ -915,6 +927,7 @@ public final class SettingsViewModel {
         youtubeAudioQuality = YouTubeAudioQuality.current(defaults: defaults)
         speakerDiarization = UserDefaultsAppRuntimePreferences.speakerDiarizationEnabled(defaults: defaults)
         meetingSpeakerDiarization = UserDefaultsAppRuntimePreferences.meetingSpeakerDiarizationEnabled(defaults: defaults)
+        meetingLiveTranscriptionEnabled = UserDefaultsAppRuntimePreferences.meetingLiveTranscriptionEnabled(defaults: defaults)
         // Ensure auto-save folders are configured before reading paths.
         // Idempotent: existing user-chosen folders are preserved; only
         // unset bookmarks get the default. This guarantees the read
