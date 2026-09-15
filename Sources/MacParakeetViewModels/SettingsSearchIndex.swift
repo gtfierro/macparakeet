@@ -316,7 +316,7 @@ public enum SettingsSearchIndex {
             subtitle: "in Meeting Recording",
             keywords: [
                 "live transcription", "live preview", "live captions", "cpu", "gpu",
-                "performance", "battery", "disable live transcription", "just record"
+                "performance", "battery", "disable live transcription", "just record",
             ],
             cardAnchor: "meeting"
         ),

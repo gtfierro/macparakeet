@@ -1287,7 +1287,8 @@ struct SettingsView: View {
 
                 settingsToggleRow(
                     title: "Live transcription during recording",
-                    detail: "Shows a live transcript preview while recording. Turn this off to just record — it saves CPU/GPU during the meeting. The full transcript is still generated after recording ends either way.",
+                    detail: "Show a transcript as you record. Turn off to reduce processing during meetings; "
+                        + "the full transcript is still created after you stop. Changes apply to your next recording.",
                     isOn: $viewModel.meetingLiveTranscriptionEnabled
                 )
 

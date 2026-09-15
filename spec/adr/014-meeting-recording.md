@@ -177,6 +177,12 @@ unconditionally, and then captures an immutable `MeetingSpeechPlan`:
 - `final` is the resolved Final Transcription selection, which follows Live
   Speech unless the user enabled the Advanced override.
 
+The preference is read once at recording start. Changing it during a meeting
+affects the next recording; Settings states this explicitly. When preview is
+absent, the recording panel says "Live transcription is off" and confirms
+that audio will be transcribed after stop, regardless of whether the user
+disabled preview or the selected engine does not support it.
+
 Live chunks and warm-up use only `preview`. The authoritative post-stop pass
 re-reads durable source audio and uses only `final`; preview text is never
 promoted into the saved transcript. The existing lock schema remains v2 and
